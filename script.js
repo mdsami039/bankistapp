@@ -79,6 +79,60 @@ const displayMovements = function (movements) {
 };
 displayMovements(account1.movements);
 
+const checkBalance = function (acc) {
+  const balance = acc.reduce((acc, curr) => acc + curr, 0);
+  console.log(balance);
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+checkBalance(account1.movements);
+
+const checkUsername = function (acc) {
+  acc.forEach(function (value, i) {
+    value.username = value.owner
+      .toLowerCase()
+      .split(` `)
+      .map(function (name) {
+        return name[0];
+      })
+      .join(``);
+  });
+};
+checkUsername(accounts);
+
+//Event HANDLER
+let currentAccount;
+btnLogin.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  if (currentAccount.owner === Number(inputLoginPin)) console.log(`login`);
+});
+
+const calcDisplaySummary = function (mov) {
+  const incomes = mov
+    .filter(curr => curr > 0)
+    .reduce((acc, curr) => acc + curr, 0);
+  labelSumIn.textContent = `${incomes}Euro`;
+
+  const outcomes = mov
+    .filter(curr => curr < 0)
+    .reduce((acc, curr) => acc + curr, 0);
+  labelSumOut.textContent = `${Math.abs(outcomes)}Euro`;
+
+  const interest = mov
+    .filter(curr => curr > 0)
+    .map(curr => (curr * 1.2) / 100)
+    .filter((curr, i, arr) => {
+      console.log(arr);
+      return curr >= 1;
+    })
+    .reduce((acc, curr) => acc + curr, 0);
+  labelSumInterest.textContent = `${interest}Euro`;
+};
+calcDisplaySummary(account1.movements);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -92,6 +146,15 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+
+const movFilter = movements.filter(function (mov) {
+  return mov < 0;
+});
+console.log(movFilter);
+
+const movReduce = movements.reduce((acc, curr) => acc + curr);
+console.log(movReduce);
+
 for (const [i, mov] of movements.entries()) {
   if (mov > 0) {
     console.log(`Movment of credit ${i + 1} is ${mov}`);
@@ -107,3 +170,21 @@ movements.forEach(function (mov, i) {
     console.log(`Movment of widrawal${i + 1} is ${Math.abs(mov)}`);
   }
 });
+
+const eurToUsd = 1.1;
+const movementsUsd = movements.map(mov => mov * eurToUsd);
+
+console.log(movements);
+console.log(movementsUsd);
+
+const movementsUSDfor = [];
+for (const mov of movements) movementsUSDfor.push(mov * eurToUsd);
+console.log(movementsUSDfor);
+
+const movementsDescription = movements.map(
+  (mov, i) =>
+    `Movement ${i + 1}: You ${mov > 0 ? `deposited` : `Withdrawal`} ${Math.abs(
+      mov
+    )}`
+);
+console.log(movementsDescription);
