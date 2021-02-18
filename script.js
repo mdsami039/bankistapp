@@ -6,21 +6,21 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'Sami Mohammed',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
 };
 
 const account2 = {
-  owner: 'Jessica Davis',
+  owner: 'Shareef Sam',
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
 };
 
 const account3 = {
-  owner: 'Steven Thomas Williams',
+  owner: 'Mohammed Samiuddin Shareef',
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
@@ -77,15 +77,12 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML(`afterbegin`, html);
   });
 };
-displayMovements(account1.movements);
 
-const checkBalance = function (acc) {
+const calcDisplayBalance = function (acc) {
   const balance = acc.reduce((acc, curr) => acc + curr, 0);
   console.log(balance);
   labelBalance.textContent = `${balance} EUR`;
 };
-
-checkBalance(account1.movements);
 
 const checkUsername = function (acc) {
   acc.forEach(function (value, i) {
@@ -107,23 +104,41 @@ btnLogin.addEventListener(`click`, function (e) {
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
   );
-  if (currentAccount.owner === Number(inputLoginPin)) console.log(`login`);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display the UI message
+
+    labelWelcome.textContent = `Welcome Back, ${
+      currentAccount.owner.split(` `)[0]
+    }`;
+
+    //clear Input fields
+    inputLoginUsername.value = inputLoginPin.value = ``;
+    inputLoginPin.blur();
+
+    containerApp.style.opacity = 100;
+    //Display Movements
+    displayMovements(currentAccount.movements);
+    //Display Balance
+    calcDisplayBalance(currentAccount.movements);
+    //Display Summary
+    calcDisplaySummary(currentAccount);
+  }
 });
 
-const calcDisplaySummary = function (mov) {
-  const incomes = mov
+const calcDisplaySummary = function (acc) {
+  const incomes = acc.movements
     .filter(curr => curr > 0)
     .reduce((acc, curr) => acc + curr, 0);
   labelSumIn.textContent = `${incomes}Euro`;
 
-  const outcomes = mov
+  const outcomes = acc.movements
     .filter(curr => curr < 0)
     .reduce((acc, curr) => acc + curr, 0);
   labelSumOut.textContent = `${Math.abs(outcomes)}Euro`;
 
-  const interest = mov
+  const interest = acc.movements
     .filter(curr => curr > 0)
-    .map(curr => (curr * 1.2) / 100)
+    .map(curr => (curr * acc.interestRate) / 100)
     .filter((curr, i, arr) => {
       console.log(arr);
       return curr >= 1;
@@ -131,7 +146,6 @@ const calcDisplaySummary = function (mov) {
     .reduce((acc, curr) => acc + curr, 0);
   labelSumInterest.textContent = `${interest}Euro`;
 };
-calcDisplaySummary(account1.movements);
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
