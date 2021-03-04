@@ -230,6 +230,31 @@ const numDeposits = accounts
   .reduce((i, curr) => (curr >= 1000 ? i + 1 : i), 0);
 
 console.log(numDeposits);
+
+//3.
+const { deposits, withdrawals } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (sum, curr) => {
+      curr > 0 ? (sum.deposits += curr) : (sum.withdrawals += curr);
+      return sum;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+console.log(deposits, withdrawals);
+
+const convertTitleCase = function (title) {
+  const capitalize = word => word[0].toUpperCase() + word.slice(1);
+  const exceptions = [`a`, `an`, `and`, `the`, `but`, `or`, `on`, `in`];
+  const titleCase = title
+    .toLowerCase()
+    .split(` `)
+    .map(word => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(` `);
+  return capitalize(titleCase);
+};
+console.log(convertTitleCase(`this is an title`));
+console.log(convertTitleCase(`This is a long TITLE but NOT too long`));
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
